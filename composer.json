@@ -1,0 +1,14 @@
+{
+  "require": {
+    "slim/slim": "3.*",
+    "monolog/monolog": "^2.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Bank\\": "src/Bank"
+    }
+  },
+  "scripts": {
+    "start": "php -S localhost:8080 -t public public/index.php"
+  }
+}
