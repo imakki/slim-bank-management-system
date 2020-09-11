@@ -15,7 +15,18 @@ class UserController {
 
     public function getUserById(Request $request, Response $response, array $args) {
 
-        echo json_encode("user by id");
+        $accountId = $request->getAttribute('accountId');
+
+        $sql = "SELECT * FROM users where accountId = $accountId";
+
+        $user = $this->container->db->query($sql)->fetchAll(\PDO::FETCH_OBJ);
+
+        if(!$user){
+            $error = "No user account found!!";
+            return $response->withJson($error,404);
+        }
+
+        return $response->withJson($user,200);
 
     }
 

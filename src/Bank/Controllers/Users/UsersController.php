@@ -14,7 +14,12 @@ class UsersController {
     }
 
     public function getAllUsers(Request $request, Response $response, array $args) {
-        echo json_encode("all users");
+
+        $sql = "SELECT * FROM users";
+
+        $users = $this->container->db->query($sql)->fetchAll(\PDO::FETCH_OBJ);
+
+        return $response->withJson($users,200);
     }
 
 }
