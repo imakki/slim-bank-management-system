@@ -23,8 +23,6 @@ class AccountTransactionController {
 
         //echo ($transactionType);
 
-        //check if first transaction
-
         $CURRENT_BALANCE_QUERY = "SELECT transaction_number, current_balance FROM accounts where accountId = $accountId ORDER BY transaction_number DESC LIMIT 1";
 
         $balance = $this->container->db->query($CURRENT_BALANCE_QUERY)->fetchAll(\PDO::FETCH_OBJ);
@@ -36,10 +34,9 @@ class AccountTransactionController {
             $transaction_if_no_balance = $this->container->db->prepare($if_not_balance)->execute([$accountId,$current_balance,$transactionMode,$transactionType,$transactionAmount]);
             return $response->withJson($transaction_if_no_balance,200);
         }else if($balance){
-            //echo "balance hai";
-            //return $response->withJson($balance[0],200);
+
             $c_balance = $balance[0]->{'current_balance'};
-            //echo ($c_balance);
+            
             if($transactionType === "credit"){
                 echo "credit";
                 $current_balance = $transactionAmount + $c_balance;

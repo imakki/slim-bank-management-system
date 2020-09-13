@@ -20,6 +20,7 @@ class UsersController {
         $users = $this->container->db->query($sql)->fetchAll(\PDO::FETCH_OBJ);
 
         return $response->withJson($users,200);
+        
     }
 
 }

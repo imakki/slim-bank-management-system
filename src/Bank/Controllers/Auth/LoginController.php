@@ -26,9 +26,10 @@ class LoginController {
             $user = $this->container->db->query($sql)->fetchAll(\PDO::FETCH_OBJ);
 
             if ($user) {
-                echo json_encode($user);
+                return $response->withJson($user[0],200);
             }else{
-                echo "invalid credentials";
+                $error = array('error' => 'Invalid credentials');
+                return $response->withJson($error,200);
             }
 
         } catch (\PDOException $e) {

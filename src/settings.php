@@ -14,13 +14,17 @@ return [
         'displayErrorDetails' => true,
         'addContentLengthHeader' => false,
 
-        // Database connection settings
-      "db" => [
-        "host" => "127.0.0.1",
-        "dbname" => "bank",
-        "user" => "root",
-        "pass" => "password",
-        "port" => 8889
+    // Renderer settings
+    'renderer'               => [
+        'template_path' => __DIR__ . '/../templates/',
     ],
+
+    // Monolog settings
+    'logger'                 => [
+        'name'  => 'Slim bank management',
+        'path'  => __DIR__ . '/../logs/app.log',
+        'level' => \Monolog\Logger::DEBUG,
+    ],
+
     ]
 ];

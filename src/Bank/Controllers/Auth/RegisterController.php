@@ -22,7 +22,8 @@ class RegisterController {
         try {
             $users = $this->container->db->query("SELECT * FROM `users` WHERE `email` = '$email'")->fetchAll(\PDO::FETCH_OBJ);
             if($users){
-                return $response->withJson('User Exists',200);
+                $error = array('error' => 'user exists');
+                return $response->withJson($error,200);
             }else{
                 $sql = "INSERT INTO users (username,email,password) VALUES (?,?,?)";
                 $registeredUser = $this->container->db->prepare($sql)->execute([$username,$email,$password]);
