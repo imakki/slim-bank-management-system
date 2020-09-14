@@ -6,13 +6,45 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <title>Banker</title>
   </head>
+  <style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    td,
+    th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+  </style>
   <body>
     <div id="banker-view">
+      <h1>Banker</h1>
       <div v-if="users.length">
-        <ul>
-          <li v-for="user in users">{{user.username}}</li>
-          <li v-for="user in users">{{user.email}}</li>
-        </ul>
+        <table>
+          <thead>
+            <tr>
+              <th>Account ID</th>
+              <th>Customer Name</th>
+              <th>Total Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="user in users">
+              <td>{{user.accountId}}</td>
+              <td>
+                <a :href="`/dashboard/${user.accountId}`">{{user.username}}</a>
+              </td>
+              <td>{{user.balance}}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
     <script>
@@ -28,7 +60,7 @@
         methods: {
           getUsers: function () {
             axios
-              .get('http://localhost:3000/api/users')
+              .get('http://localhost:3000/api/users/balance')
               .then((response) => {
                 this.users = response.data;
                 console.log(response.data);

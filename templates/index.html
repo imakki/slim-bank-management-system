@@ -83,8 +83,9 @@
                   password: this.password,
                 })
                 .then(function (response) {
-                  this.userId = response.data.user_id;
-                  console.log(response);
+                  this.userId = response.data.accountId;
+                  window.location = `http://localhost:3000/dashboard/${response.data.accountId}`;
+                  //console.log(response);
                 })
                 .catch(function (error) {
                   console.log(error);
@@ -97,8 +98,9 @@
                   password: this.password,
                 })
                 .then(function (response) {
-                  this.userId = response.data.user_id;
-                  console.log(response);
+                  this.userId = response.data.accountId;
+                  window.location = `/dashboard/${response.data.accountId}`;
+                  //console.log(response);
                 })
                 .catch(function (error) {
                   console.log(error);
