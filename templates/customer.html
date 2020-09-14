@@ -2,9 +2,169 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <title>Customer Page</title>
   </head>
+  <style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    td,
+    th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      width: 25%;
+      text-align: center;
+    }
+
+    .form-input-container {
+      display: flex;
+      justify-content: center;
+    }
+  </style>
   <body>
-    <h1>Customer</h1>
+    <div id="customer-view">
+      <h1>{{message}}</h1>
+      <div v-if="usersBalance.length">
+        <table>
+          <thead>
+            <tr>
+              <th>Date & Time</th>
+              <th>Type</th>
+              <th>Transaction Amount</th>
+              <th>Current Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="user in usersBalance">
+              <td>{{user.date_of_transaction}}</td>
+              <td>{{user.transaction_type}}</td>
+              <td>{{user.transaction_amount}}</td>
+              <td>{{user.current_balance}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button v-on:click.prevent="transactionNew">New Transaction</button>
+      <div v-if="!transaction" class="form-input-container">
+        <form @submit.prevent="onSubmit">
+          <label for="transaction-medium">Transaction Medium:</label>
+          <select
+            v-model="medium_of_transaction"
+            name="transaction-medium"
+            id="transaction-medium"
+          >
+            <option value="bank">Bank</option>
+            <option value="online">Online</option>
+            <option value="atm">ATM</option>
+          </select>
+          <label for="transaction-type">Transaction Type:</label>
+          <select
+            name="transaction-type"
+            v-model="transaction_type"
+            id="transaction-type"
+          >
+            <option value="credit">Credit</option>
+            <option value="debit">Debit</option>
+          </select>
+          <label for="transaction-amount">Amount:</label>
+          <input
+            type="number"
+            v-model="transaction_amount"
+            id="transaction-amount"
+            name="transaction-amount"
+          />
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+    </div>
+    <script>
+      var app = new Vue({
+        el: '#customer-view',
+        data: {
+          message: 'customer',
+          transaction: true,
+          currentBalance: null,
+          medium_of_transaction: '',
+          transaction_type: '',
+          transaction_amount: '',
+          usersBalance: [],
+        },
+        computed: {
+          debitAmountGreaterThanCurrent: function () {
+            return (
+              this.transaction_type == 'debit' &&
+              this.transaction_amount > this.currentBalance
+            );
+          },
+        },
+        created: function () {
+          this.getUsers();
+          this.getCurrentBalance();
+        },
+        methods: {
+          transactionNew: function () {
+            this.transaction = !this.transaction;
+            console.log(this.transaction);
+          },
+          onSubmit: function () {
+            if (this.debitAmountGreaterThanCurrent) {
+              alert('No Sufficient Funds!!');
+            } else {
+              axios
+                .post('http://localhost:3000/api/account/transaction/3', {
+                  medium_of_transaction: this.medium_of_transaction,
+                  transaction_type: this.transaction_type,
+                  transaction_amount: this.transaction_amount,
+                })
+                .then(function (response) {
+                  console.log(response);
+                })
+                .catch(function (error) {
+                  console.log(error);
+                });
+            }
+            (this.medium_of_transaction = ''),
+              (this.transaction_type = ''),
+              (this.transaction_amount = '');
+          },
+          getUsers: function () {
+            axios
+              .get('http://localhost:3000/api/user/balance/3')
+              .then((response) => {
+                this.usersBalance = response.data;
+                console.log(response.data);
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          },
+          getCurrentBalance: function () {
+            axios
+              .get('http://localhost:3000/api/user/currentbalance/3')
+              .then((response) => {
+                this.currentBalance = response.data.current_balance;
+                console.log(response.data);
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          },
+        },
+      });
+    </script>
   </body>
 </html>

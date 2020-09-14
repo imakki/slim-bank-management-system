@@ -5,6 +5,9 @@ use Bank\Controllers\Accounts\AccountDetailsController;
 use Bank\Controllers\Accounts\AccountTransactionController;
 use Bank\Controllers\Users\UsersController;
 use Bank\Controllers\Users\UserController;
+use Bank\Controllers\Users\UserBalanceController;
+use Bank\Controllers\Users\UsersAndBalanceController;
+use Bank\Controllers\Users\UserCurrentBalanceController;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -17,6 +20,10 @@ $app->group('/api', function() {
     //User routes
     $this->get('/users', UsersController::class . ':getAllUsers')->setName('auth.getAllUsers');
     $this->get('/user/{accountId}', UserController::class . ':getUserById')->setName('auth.getUserById');
+    $this->get('/users/balance', UsersAndBalanceController::class . ':getAllUsersBalance')->setName('auth.getAllUsersBalance');
+    $this->get('/user/balance/{accountId}', UserBalanceController::class . ':getUserBalance')->setName('auth.getUserBalance');
+    $this->get('/user/currentbalance/{accountId}', UserCurrentBalanceController::class . ':getCurrentBalance')->setName('auth.getCurrentBalance');
+    
 
     //account routes
     $this->get('/account/{accountId}', AccountDetailsController::class . ':accountDetails')->setName('auth.accountDetails');

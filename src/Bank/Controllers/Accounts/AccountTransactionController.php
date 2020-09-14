@@ -28,7 +28,7 @@ class AccountTransactionController {
         $balance = $this->container->db->query($CURRENT_BALANCE_QUERY)->fetchAll(\PDO::FETCH_OBJ);
 
         if(!$balance){
-            echo "no balance";
+            //echo "no balance";
             $current_balance = $transactionAmount;
             $if_not_balance = "INSERT INTO accounts (accountId,current_balance,medium_of_transaction,transaction_type,transaction_amount) VALUES (?,?,?,?,?)";
             $transaction_if_no_balance = $this->container->db->prepare($if_not_balance)->execute([$accountId,$current_balance,$transactionMode,$transactionType,$transactionAmount]);
@@ -38,7 +38,7 @@ class AccountTransactionController {
             $c_balance = $balance[0]->{'current_balance'};
             
             if($transactionType === "credit"){
-                echo "credit";
+                //echo "credit";
                 $current_balance = $transactionAmount + $c_balance;
                 $If_balance = "INSERT INTO accounts (accountId,current_balance,medium_of_transaction,transaction_type,transaction_amount) VALUES (?,?,?,?,?)";
                 $transaction_if_balance = $this->container->db->prepare($If_balance)->execute([$accountId,$current_balance,$transactionMode,$transactionType,$transactionAmount]);
@@ -46,7 +46,8 @@ class AccountTransactionController {
            }else if($transactionType === "debit"){
                //echo "debit";
                if($transactionAmount > $c_balance){
-                   echo json_encode("withdrawal amount exceeds current amount!!");
+                   $error = "withdrawal amount exceeds current amount!!";
+                   return $response->withJson($error,200);
                }else{
                     $current_balance = $c_balance - $transactionAmount;
                     $query_debit = "INSERT INTO accounts (accountId,current_balance,medium_of_transaction,transaction_type,transaction_amount) VALUES (?,?,?,?,?)";

@@ -8,13 +8,35 @@
   </head>
   <body>
     <div id="banker-view">
-      <h1>{{message}}</h1>
+      <div v-if="users.length">
+        <ul>
+          <li v-for="user in users">{{user.username}}</li>
+          <li v-for="user in users">{{user.email}}</li>
+        </ul>
+      </div>
     </div>
     <script>
       var app = new Vue({
         el: '#banker-view',
         data: {
           message: 'banker',
+          users: [],
+        },
+        created: function () {
+          this.getUsers();
+        },
+        methods: {
+          getUsers: function () {
+            axios
+              .get('http://localhost:3000/api/users')
+              .then((response) => {
+                this.users = response.data;
+                console.log(response.data);
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          },
         },
       });
     </script>
