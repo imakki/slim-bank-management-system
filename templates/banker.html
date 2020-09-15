@@ -2,32 +2,52 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <title>Banker</title>
   </head>
   <style>
-    table {
-      font-family: arial, sans-serif;
-      border-collapse: collapse;
-      width: 100%;
+    body {
+      padding: 2rem;
     }
 
-    td,
-    th {
-      border: 1px solid #dddddd;
-      text-align: left;
-      padding: 8px;
+    #banker-view {
+      border: 1px solid gray;
+      padding: 10px;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
     }
     tr:nth-child(even) {
       background-color: #dddddd;
     }
+
+    .title-logout-btn {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
   </style>
   <body>
     <div id="banker-view">
-      <h1>Banker</h1>
+      <div class="title-logout-btn">
+        <h3>Banker</h3>
+        <button v-on:click="logOut">Log Out</button>
+      </div>
+
       <div v-if="users.length">
-        <table>
+        <table class="table table-bordered">
           <thead>
             <tr>
               <th>Account ID</th>
@@ -53,14 +73,20 @@
         data: {
           message: 'banker',
           users: [],
+          token: '',
         },
         created: function () {
+          this.getToken();
           this.getUsers();
         },
         methods: {
           getUsers: function () {
             axios
-              .get('http://localhost:3000/api/users/balance')
+              .get('http://localhost:3000/api/users/balance', {
+                headers: {
+                  Authorization: 'Bearer ' + this.token,
+                },
+              })
               .then((response) => {
                 this.users = response.data;
                 console.log(response.data);
@@ -68,6 +94,13 @@
               .catch((error) => {
                 console.log(error);
               });
+          },
+          getToken: function () {
+            this.token = window.localStorage.getItem('authToken');
+          },
+          logOut: function () {
+            window.localStorage.clear();
+            window.location = `/`;
           },
         },
       });

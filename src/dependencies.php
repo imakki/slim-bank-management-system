@@ -2,6 +2,41 @@
 
 $container = $app->getContainer();
 
+//error handler
+// $container["errorHandler"] = function ($c){
+//     return function($request,$response,$exception) use ($c)
+//     {
+//         return $response->withStatus(500)
+//             ->withHeader('Content-Type','application/json')
+//             ->write(json_encode(
+//                 array(
+//                     "success"=>false,
+//                     "error"=>"INTERNAL ERROR",
+//                     "message"=>"something went wrong internally",
+//                     "status_code"=>"500",
+//                     'trace'=>$exception->getTraceAsString()
+//                 )
+//             ));
+//     };
+// };
+
+//Not found handler
+// $container["notFoundHandler"] = function ($c){
+//     return function($request,$response,$exception) use ($c)
+//     {
+//         return $response->withStatus(404)
+//             ->withHeader('Content-Type','application/json')
+//             ->write(json_encode(
+//                 array(
+//                     "success"=>false,
+//                     "error"=>"NOT FOUND",
+//                     "message"=>"Endpoint Not found",
+//                     "status_code"=>"404"
+//                 )
+//             ));
+//     };
+// };
+
 // PDO database library 
 $container['db'] = function ($c) {
 

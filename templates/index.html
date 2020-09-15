@@ -2,12 +2,34 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- CSS only -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <title>Login/Signup Page</title>
   </head>
+  <style>
+    #signin-register-form {
+      width: 40%;
+      text-align: center;
+      margin-top: 10rem;
+      padding: 40px;
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid black;
+    }
+  </style>
   <body>
-    <div id="signin-register-form">
+    <div id="signin-register-form" class="container-fluid">
       <template>
         <div class="vue-tempalte">
           <form @submit.prevent="onSubmit">
@@ -44,16 +66,23 @@
               />
             </div>
 
-            <button type="submit" class="btn btn-dark btn-lg btn-block">
+            <button type="submit" class="btn btn-outline-dark btn-md btn-block">
               Submit
             </button>
             <button
               v-if="!register"
               type="submit"
-              class="btn btn-dark btn-lg btn-block"
+              class="btn btn-outline-dark btn-md btn-block"
               v-on:click.prevent="greet"
             >
               Register
+            </button>
+            <button
+              v-if="register"
+              class="btn btn-outline-dark btn-md btn-block"
+              v-on:click="goBack"
+            >
+              Back
             </button>
           </form>
         </div>
@@ -68,11 +97,15 @@
           email: '',
           password: '',
           userId: null,
+          token: '',
         },
         methods: {
           greet: function () {
             this.register = !this.register;
             console.log(this.register);
+          },
+          goBack: function () {
+            window.location = '/';
           },
           onSubmit: function () {
             if (this.register) {
@@ -82,9 +115,10 @@
                   email: this.email,
                   password: this.password,
                 })
-                .then(function (response) {
+                .then((response) => {
                   this.userId = response.data.accountId;
-                  window.location = `http://localhost:3000/dashboard/${response.data.accountId}`;
+                  window.localStorage.setItem('authToken', response.data.token);
+                  window.location = `http://localhost:3000/dashboard?userId=${response.data.accountId}`;
                   //console.log(response);
                 })
                 .catch(function (error) {
@@ -97,9 +131,10 @@
                   email: this.email,
                   password: this.password,
                 })
-                .then(function (response) {
+                .then((response) => {
                   this.userId = response.data.accountId;
-                  window.location = `/dashboard/${response.data.accountId}`;
+                  window.localStorage.setItem('authToken', response.data.token);
+                  window.location = `/dashboard?userId=${response.data.accountId}`;
                   //console.log(response);
                 })
                 .catch(function (error) {

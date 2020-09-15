@@ -12,22 +12,23 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 $app->group('/api', function() {
+    //$jwtMiddleware = $this->getContainer()->get('jwt');
 
     // Auth routes
     $this->post('/user/register', RegisterController::class . ':register')->setName('auth.register');
     $this->post('/user/login', LoginController::class . ':login')->setName('auth.login');
 
     //User routes
-    $this->get('/users', UsersController::class . ':getAllUsers')->setName('auth.getAllUsers');
-    $this->get('/user/{accountId}', UserController::class . ':getUserById')->setName('auth.getUserById');
-    $this->get('/users/balance', UsersAndBalanceController::class . ':getAllUsersBalance')->setName('auth.getAllUsersBalance');
-    $this->get('/user/balance/{accountId}', UserBalanceController::class . ':getUserBalance')->setName('auth.getUserBalance');
-    $this->get('/user/currentbalance/{accountId}', UserCurrentBalanceController::class . ':getCurrentBalance')->setName('auth.getCurrentBalance');
+    $this->get('/users', UsersController::class . ':getAllUsers');
+    $this->get('/user/{accountId}', UserController::class . ':getUserById');
+    $this->get('/users/balance', UsersAndBalanceController::class . ':getAllUsersBalance');
+    $this->get('/user/balance/{accountId}', UserBalanceController::class . ':getUserBalance');
+    $this->get('/user/currentbalance/{accountId}', UserCurrentBalanceController::class . ':getCurrentBalance');
     
 
     //account routes
-    $this->get('/account/{accountId}', AccountDetailsController::class . ':accountDetails')->setName('auth.accountDetails');
-    $this->post('/account/transaction/{accountId}', AccountTransactionController::class . ':transactions')->setName('auth.transactions');
+    $this->get('/account/{accountId}', AccountDetailsController::class . ':accountDetails');
+    $this->post('/account/transaction/{accountId}', AccountTransactionController::class . ':transactions');
 });
 
 //View Routes
@@ -38,11 +39,12 @@ $app->get('/',
         return $this->renderer->render($response, 'index.html');
 });
 
-$app->get('/dashboard/{accountId}',
+$app->get('/dashboard',
     function (Request $request, Response $response, array $args) {
-        $accountId = $request->getAttribute('accountId');
-
-        $sql = "SELECT * FROM `users` WHERE `accountId` = '$accountId'";
+        //$accountId = $request->getAttribute('accountId');
+        $userId = $request->getQueryParam('userId');
+        //echo "$id";
+        $sql = "SELECT * FROM `users` WHERE `accountId` = '$id'";
         $user = $this->db->query($sql)->fetchAll(\PDO::FETCH_OBJ);
 
         //check if admin

@@ -2,22 +2,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <title>Customer Page</title>
   </head>
   <style>
-    table {
-      font-family: arial, sans-serif;
-      border-collapse: collapse;
-      width: 100%;
+    body {
+      padding: 1rem;
     }
-
-    td,
-    th {
-      border: 1px solid #dddddd;
-      text-align: left;
-      padding: 8px;
+    #customer-view {
+      padding: 10px;
+      border: 1px solid black;
     }
     tr:nth-child(even) {
       background-color: #dddddd;
@@ -34,12 +39,21 @@
       display: flex;
       justify-content: center;
     }
+
+    .title-logout-btn {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
   </style>
   <body>
     <div id="customer-view">
-      <h1>{{message}}</h1>
+      <div class="title-logout-btn">
+        <h3>{{title}}</h3>
+        <button class="logout-btn" v-on:click="logOut">Log Out</button>
+      </div>
       <div v-if="usersBalance.length">
-        <table>
+        <table class="table table-bordered">
           <thead>
             <tr>
               <th>Date & Time</th>
@@ -95,13 +109,15 @@
       var app = new Vue({
         el: '#customer-view',
         data: {
-          message: 'customer',
+          title: 'Customer',
           transaction: true,
           currentBalance: null,
           medium_of_transaction: '',
           transaction_type: '',
           transaction_amount: '',
           usersBalance: [],
+          token: '',
+          userId: null,
         },
         computed: {
           debitAmountGreaterThanCurrent: function () {
@@ -112,6 +128,8 @@
           },
         },
         created: function () {
+          this.getToken();
+          this.getUserIdFromUrl();
           this.getUsers();
           this.getCurrentBalance();
         },
@@ -125,13 +143,21 @@
               alert('No Sufficient Funds!!');
             } else {
               axios
-                .post('http://localhost:3000/api/account/transaction/3', {
-                  medium_of_transaction: this.medium_of_transaction,
-                  transaction_type: this.transaction_type,
-                  transaction_amount: this.transaction_amount,
-                })
+                .post(
+                  `http://localhost:3000/api/account/transaction/${this.userId}`,
+                  {
+                    medium_of_transaction: this.medium_of_transaction,
+                    transaction_type: this.transaction_type,
+                    transaction_amount: this.transaction_amount,
+                  },
+                  {
+                    headers: {
+                      Authorization: 'Bearer ' + this.token,
+                    },
+                  }
+                )
                 .then(function (response) {
-                  console.log(response);
+                  window.location.reload();
                 })
                 .catch(function (error) {
                   console.log(error);
@@ -143,10 +169,14 @@
           },
           getUsers: function () {
             axios
-              .get('http://localhost:3000/api/user/balance/3')
+              .get(`http://localhost:3000/api/user/balance/${this.userId}`, {
+                headers: {
+                  Authorization: 'Bearer ' + this.token,
+                },
+              })
               .then((response) => {
                 this.usersBalance = response.data;
-                console.log(response.data);
+                //console.log(response.data);
               })
               .catch((error) => {
                 console.log(error);
@@ -154,14 +184,34 @@
           },
           getCurrentBalance: function () {
             axios
-              .get('http://localhost:3000/api/user/currentbalance/3')
+              .get(
+                `http://localhost:3000/api/user/currentbalance/${this.userId}`,
+                {
+                  headers: {
+                    Authorization: 'Bearer ' + this.token,
+                  },
+                }
+              )
               .then((response) => {
                 this.currentBalance = response.data.current_balance;
-                console.log(response.data);
+                //console.log(response.data);
               })
               .catch((error) => {
                 console.log(error);
               });
+          },
+          getToken: function () {
+            this.token = window.localStorage.getItem('authToken');
+          },
+          getUserIdFromUrl: function () {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const accountId = urlParams.get('userId');
+            this.userId = accountId;
+          },
+          logOut: function () {
+            window.localStorage.clear();
+            window.location = `/`;
           },
         },
       });
